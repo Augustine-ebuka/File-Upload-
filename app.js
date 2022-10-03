@@ -4,20 +4,30 @@ require('express-async-errors');
 const express = require('express');
 const app = express();
 const fileUpload = require('express-fileupload');
-
+const Cloudinary = require('cloudinary').v2;
+Cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+})
 // database
 const connectDB = require('./db/connect');
 
 //product router
+
 const productRouter = require('./routes/productRoutes');
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
+const { urlencoded } = require('express');
 
 app.use(express.json());
-app.use(fileUpload());
+app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload({useTempFiles: true}));
 
+
+app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.send('<h1>File Upload Starter</h1>');
 });
